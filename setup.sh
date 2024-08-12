@@ -164,8 +164,9 @@ sudo npm install -g n
 
 ### Install insomnia
 
-echo "deb [trusted=yes arch=amd64] https://download.konghq.com/insomnia-ubuntu/ default all" \
-    | sudo tee -a /etc/apt/sources.list.d/insomnia.list
+curl -1sLf \
+  'https://packages.konghq.com/public/insomnia/setup.deb.sh' \
+  | sudo -E distro=ubuntu codename=focal bash
 
 # Refresh repository sources and install Insomnia
 sudo apt-get update 
