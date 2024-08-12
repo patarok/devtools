@@ -1,0 +1,19 @@
+#!/bin/bash
+
+rm -f /tmp/erp.zip
+
+resticTarget=$1
+
+if [[ -z "$resticTarget" ]]; then
+    echo "restic-target required"
+    echo -e "$usage"
+    exit 1;
+fi
+
+odoo-backup -d Live -o /tmp/erp.zip
+
+restic -r "$resticTarget" --verbose backup "/tmp/erp.zip"
+
+restic -r "$resticTarget" --verbose forget --keep-last 120 --prune
+
+rm -f /tmp/erp.zip

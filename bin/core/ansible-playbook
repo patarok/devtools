@@ -1,0 +1,10 @@
+#!/bin/bash
+
+DEV_HOME="$HOME/lib/devtools"
+
+docker inspect --type=image ansible > /dev/null 2>&1 || \
+            docker build --build-arg USER_ID=$(id -u) --build-arg GROUP_ID=$(id -g) -t ansible "$DEV_HOME/docker/ansible" --no-cache
+
+
+
+docker run --rm -it -v "$(pwd)":/ansible -v "${HOME}/.ssh":/home/ansible/.ssh -v "$SSH_AUTH_SOCK:/ssh-agent" --env SSH_AUTH_SOCK=/ssh-agent ansible /usr/bin/ansible-playbook $@ 

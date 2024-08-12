@@ -1,0 +1,30 @@
+#!/bin/bash
+function join_by { local d=${1-} f=${2-}; if shift 2; then printf %s "$f" "${@/#/$d}"; fi; }
+
+name=$1
+if [[ -z "$1" ]] || [[ "$1" == "--help" ]]; then
+echo -e "Usage: svelte-icon [name] [?path]\nParses an streamline icon for svelte with tailwind. Uses given Path or stdin.\nCopy a streamline icon, run this command and paste the content. Stop with Ctrl+D.\nSee Icons: https://www.streamlinehq.com/icons/streamline-light"
+exit -1
+fi
+
+file=${2:-/dev/stdin}
+
+if [[ "$file" == "/dev/stdin" ]]; then
+echo "Paste icon content here and stop with Ctrl+D."
+fi
+
+content=$(<$file)
+
+prefix="<script>
+    export let fill = 'none';
+    export let stroke = 'inherit';
+    let clazz = 'w-4 h-4 inline';
+    export {clazz as class};
+</script>"
+
+echo -e "${prefix}\n${content}" | sed \
+-e 's/stroke="[^"]*"/{stroke}/g' \
+-e 's/fill="[^"]*"/{fill}/g' \
+-e 's/<svg/<svg class="stroke-current {clazz}" {...$$restProps}/g' \
+> "$name.svelte"
+

@@ -1,0 +1,18 @@
+old_dir=$(pwd)
+
+DEV_HOME="$HOME/lib/devtools"
+
+cd "$DEV_HOME"
+git pull
+cd "$old_dir"
+echo "Devtools updated"
+
+echo "Cleanup old docker images"
+
+docker inspect --type=image deployer > /dev/null 2>&1 && docker rmi deployer
+docker inspect --type=image laravel > /dev/null 2>&1 && docker rmi laravel	
+
+echo "Regenerate SSL Keys"
+mkdir -p $HOME/dev/.ssl
+mkcert -install
+mkcert -key-file $HOME/dev/.ssl/localtest.me.key -cert-file $HOME/dev/.ssl/localtest.me.crt "*.localtest.me" localtest.me

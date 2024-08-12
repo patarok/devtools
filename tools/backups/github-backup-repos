@@ -1,0 +1,64 @@
+#!/bin/bash
+
+### Install
+## Backup Setup
+#
+## Install Rclone
+#curl https://rclone.org/install.sh | sudo bash
+#
+## Install restic
+#sudo apt-get install restic
+#
+## Config Onedrive https://rclone.org/onedrive/
+#rclone config
+#
+## Setup restic https://restic.readthedocs.io/en/stable/030_preparing_a_new_repo.html#other-services-via-rclone
+#restic -r rclone:github-backups:patarok init
+#
+## Add In Crontab
+#export RESTIC_PASSWORD=""
+
+DIR=$(pwd)
+
+read -r -d '' usage <<- EOM
+    github-backup-repos [namespace] [restic-target]
+EOM
+
+namespace=$1
+
+if [[ -z "$namespace" ]]; then
+    echo "namespace required"
+    echo -e "$usage"
+    exit 1;
+fi
+
+resticTarget=$2
+
+
+if [[ -z "$resticTarget" ]]; then
+    echo "restic-target required"
+    echo -e "$usage"
+    exit 1;
+fi
+
+CLONE_PATH="/tmp/github-backups"
+mkdir -p "$CLONE_PATH"
+
+repos=$(gh repo list "$namespace" -L 2000 --json nameWithOwner --jq ".[].nameWithOwner")
+
+echo -e "Backing up: \n$repos"
+
+cd "$CLONE_PATH"
+for repo in $repos
+do
+    gh repo clone "$repo"
+done
+
+
+restic -r "$resticTarget" --verbose backup "$CLONE_PATH"
+
+restic -r "$resticTarget" --verbose forget --keep-last 120 --prune
+
+rm -r "$CLONE_PATH"
+
+cd "$DIR"

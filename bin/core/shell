@@ -1,0 +1,15 @@
+#!/bin/bash
+
+for setup in `detect-dev-setup`; do
+    if [ "$setup" == "docker-compose" ]; then
+        container=${1:-app}
+        if [[ -z "$2" ]]; then
+            command="/bin/bash"
+        else
+            command="${@:2}"
+        fi
+        echo "running command: docker-compose exec $container $command"
+
+        docker-compose exec "$container" $command
+    fi
+done

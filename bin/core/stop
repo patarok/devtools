@@ -1,0 +1,9 @@
+#!/bin/bash
+
+for setup in `detect-dev-setup`; do
+    if [ "$setup" == "docker-compose" ]; then
+        echo "running command: docker-compose stop $@"
+
+        docker-compose stop $@
+    fi
+done

@@ -1,0 +1,11 @@
+#!/bin/bash
+
+for setup in `detect-dev-setup`; do
+    if [ "$setup" == "docker-compose" ]; then
+        container=app
+
+        echo "running command: docker-compose exec $container php craft $@"
+
+        docker-compose exec "$container" php craft $@
+    fi
+done

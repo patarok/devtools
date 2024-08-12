@@ -1,0 +1,15 @@
+Host 213.208.152.124
+    StrictHostKeyChecking no
+    UserKnownHostsFile=/dev/null
+Host 213.208.152.117
+    StrictHostKeyChecking no
+    UserKnownHostsFile=/dev/null
+Host 83.68.128.25
+    StrictHostKeyChecking no
+    UserKnownHostsFile=/dev/null
+Host 92.60.6.43
+    StrictHostKeyChecking no
+    UserKnownHostsFile=/dev/null
+Host 49.12.80.74
+    StrictHostKeyChecking no
+    UserKnownHostsFile=/dev/null

@@ -1,0 +1,4 @@
+#!/bin/bash
+
+to="${3:-entwicklung@pc-web.at}"
+swaks --to $to -s mail.smtp2go.com -tlsc -p 465 -a LOGIN -au $1 -ap $2 --from "noreply@$1"

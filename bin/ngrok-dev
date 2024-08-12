@@ -1,0 +1,3 @@
+#!/bin/bash
+
+ngrok http --region=eu --hostname=pcweb.eu.ngrok.io 8080

@@ -1,0 +1,31 @@
+#!/bin/bash
+
+DEV_HOME="$HOME/lib/devtools"
+
+if [ "$1" == "init" ]; then
+        docker inspect --type=image deployer > /dev/null 2>&1 || \
+        docker build --build-arg USER_ID=$(id -u) --build-arg GROUP_ID=$(id -g) -t deployer "$DEV_HOME/docker/deployer" --no-cache			
+
+        echo "running command: docker run --rm -it -v $(pwd):/project -v ${HOME}/.ssh:/home/deployer/.ssh deployer /usr/local/bin/deployer $@"
+
+        docker run --rm -it -v "$(pwd)":/project -v "${HOME}/.ssh":/home/deployer/.ssh deployer /usr/local/bin/deployer $@ 
+    return 
+fi
+for setup in `detect-dev-setup`; do
+    if [ "$setup" == "deployer" ]; then
+
+        if [ -z "$1" ]; then				
+            command="deploy staging"
+        else
+            command="$@"
+        fi
+        
+        docker inspect --type=image deployer > /dev/null 2>&1 || \
+        docker build --build-arg USER_ID=$(id -u) --build-arg GROUP_ID=$(id -g) -t deployer "$DEV_HOME/docker/deployer" --no-cache			
+
+        echo "running command: docker run --rm -it -v $(pwd):/project -v "${HOME}/.ssh":/home/deployer/.ssh -v $SSH_AUTH_SOCK:/ssh-agent --env SSH_AUTH_SOCK=/ssh-agent deployer /usr/local/bin/deployer $command"			
+
+        docker run --rm -it -v "$(pwd)":/project -v "${HOME}/.ssh":/home/deployer/.ssh -v "$SSH_AUTH_SOCK:/ssh-agent" --env SSH_AUTH_SOCK=/ssh-agent deployer /usr/local/bin/deployer $command 
+        
+    fi
+done

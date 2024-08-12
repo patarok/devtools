@@ -1,0 +1,5 @@
+#!/bin/bash
+
+echo "running command: ssh-keygen -o -a 100 -t ed25519"
+
+ssh-keygen -o -a 100 -t ed25519 

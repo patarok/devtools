@@ -1,0 +1,34 @@
+#!/bin/bash
+# Example: digs pc-web.at
+# Example Nameserver: digs pc-web.at ns
+
+declare -A IPS
+IPS["213.208.152.124"]="Carl"
+IPS["213.208.152.117"]="Hera"
+IPS["213.208.152.121"]="Athene"
+IPS["213.208.152.120"]="Mars"
+IPS["83.68.128.25"]="Demeter"
+IPS["92.60.6.43"]="Andromeda"
+IPS["213.208.152.122"]="Pc-Web Main"
+IPS["49.12.80.74"]="pc-web.cloud ALT"
+IPS["138.201.227.201"]="pc-web.cloud"
+IPS["162.55.94.23"]="pc-web.dev ALT"
+IPS["142.132.229.186"]="gt3s.pc-web.at"
+IPS["116.202.199.186"]="pc-web.dev"
+
+DOMAIN="$1"
+DOMAIN=$(echo "$DOMAIN" | sed -e 's#/$##') # Remove trailing /
+DOMAIN=$(echo "$DOMAIN" | sed -e 's/^https:\/\///') # Remove leading https://
+DOMAIN=$(echo "$DOMAIN" | sed -e 's/^http:\/\///') # Remove leading http://
+
+shift 1
+echo "Lookup $DOMAIN"
+res=$(dig $DOMAIN +short $@)
+
+for ip in "${!IPS[@]}"; do 
+
+	res="${res/$ip/$ip (${IPS[$ip]})}"
+done
+
+echo "$res"
+

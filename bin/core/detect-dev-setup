@@ -1,0 +1,11 @@
+#!/bin/bash
+
+detected=""
+if [ -e "docker-compose.yml" ]; then	
+    detected="$detected docker-compose"
+fi
+
+if [ -e "deploy.php" ]; then	
+    detected="$detected deployer"
+fi
+echo "$detected"

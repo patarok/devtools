@@ -1,0 +1,24 @@
+#!/bin/bash
+
+mkdir -p "$HOME/.config/shopify"
+mkdir -p "$HOME/.cache/shopify"
+touch "$HOME/.cache/shopify/.db.pstore"
+
+DEV_HOME="$HOME/lib/devtools"
+
+docker inspect --type=image shopify > /dev/null 2>&1 || \
+            docker build --build-arg USER_ID=$(id -u) --build-arg GROUP_ID=$(id -g) -t shopify "$DEV_HOME/docker/shopify" --no-cache
+
+if [ "$1" == "login" ]; then
+
+echo "running command: docker run --user root --rm -it -p \"3456:3456\" -v $(pwd):/app -v \"${HOME}/.config/shopify\":\"/root/.config/shopify\" -v \"${HOME}/.cache/shopify\":\"/root/.cache/shopify\" shopify shopify $@"
+
+docker run --user root --rm -it -p "3456:3456" -v $(pwd):/app -v "${HOME}/.config/shopify":"/root/.config/shopify" -v "${HOME}/.cache/shopify":"/root/.cache/shopify" shopify shopify $@
+
+else
+
+echo "running command: docker run --rm -it -v $(pwd):/app -v \"${HOME}/.config/shopify\":\"/home/app/.config/shopify\" -v \"${HOME}/.cache/shopify\":\"/home/app/.cache/shopify\" shopify shopify $@"
+
+docker run --rm -it -v $(pwd):/app -v "${HOME}/.config/shopify":"/home/app/.config/shopify" -v "${HOME}/.cache/shopify":"/home/app/.cache/shopify" shopify shopify $@
+
+fi

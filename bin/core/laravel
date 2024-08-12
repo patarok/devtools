@@ -1,0 +1,23 @@
+#!/bin/bash
+
+if [ "$1" == "new" ]; then
+    docker inspect --type=image laravel > /dev/null 2>&1 || \
+            docker build --build-arg USER_ID=$(id -u) --build-arg GROUP_ID=$(id -g) -t laravel "$DEV_HOME/docker/laravel" --no-cache
+
+    echo "running command: docker run --rm -it -v $(pwd):/app composer composer create-project --prefer-dist laravel/laravel ${@:2}"
+
+    docker run --rm -it -v "$(pwd)":/app composer composer create-project --prefer-dist laravel/laravel ${@:2}
+elif [ "$1" == "routes" ]; then
+
+    if [[ "$2" != "" ]]; then 
+        echo "running command: docker-compose exec app php artisan route:list --name "${2}" --columns method,name,uri,action"
+
+        docker-compose exec app php artisan route:list --name "${2}" --columns method,name,uri,action
+    else
+        echo "running command: docker-compose exec app php artisan route:list --columns method,name,uri,action"
+
+        docker-compose exec app php artisan route:list --columns method,name,uri,action
+    fi
+else
+    echo "Unknown command $1"
+fi

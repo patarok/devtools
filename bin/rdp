@@ -1,0 +1,12 @@
+#!/bin/bash
+
+server=$1
+
+if [[ -z "$server" ]]; then
+    echo "Missing rdp server!"
+    exit 1
+fi
+
+pw=$(secret-tool lookup password windows)
+
+xfreerdp /multimon /u:$USER /p:$pw /v:$server /network:auto /bpp:24 -themes -wallpaper /audio-mode:1 /drive:home,/home/$USER

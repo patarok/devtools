@@ -1,0 +1,18 @@
+#!/bin/bash
+
+
+resticTarget=$1
+
+if [[ -z "$resticTarget" ]]; then
+    echo "restic-target required"
+    echo -e "$usage"
+    exit 1;
+fi
+
+
+/opt/zammad/contrib/backup/zammad_backup.sh > /dev/null 2>&1
+
+
+restic -r "$resticTarget" --verbose backup "/var/backup/zammad"
+
+restic -r "$resticTarget" --verbose forget --keep-daily 7 --keep-weekly 4 --keep-monthly 12 --keep-yearly 7 --prune

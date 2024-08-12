@@ -1,0 +1,9 @@
+#!/bin/bash
+
+for setup in `detect-dev-setup`; do
+    if [ "$setup" == "docker-compose" ]; then
+        echo "running command: uid=$(id -u) gid=$(id -g) docker-compose up -d $@"
+
+        uid=$(id -u) gid=$(id -g) docker-compose up -d $@	
+    fi
+done

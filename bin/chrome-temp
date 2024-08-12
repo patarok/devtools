@@ -1,0 +1,5 @@
+#! /bin/bash
+PROFILE="temp-chrome-profile-$RANDOM"
+mkdir $HOME/.$PROFILE
+google-chrome --user-data-dir=$HOME/.$PROFILE
+rm -r $HOME/.$PROFILE

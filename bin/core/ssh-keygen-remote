@@ -1,0 +1,11 @@
+#!/bin/bash
+
+target="$1"
+if [ -z "$target" ]; then
+    echo "Invalid target!"
+    return
+fi
+
+#todo: Name ausgeben
+
+ssh "$target" 'ssh-keygen -o -a 100 -t ed25519 -f $(eval echo "~`whoami`")/.ssh/id_ed25519 -C "autokey-`hostname`" -q -N "" && cat $(eval echo "~`whoami`")/.ssh/id_ed25519.pub'

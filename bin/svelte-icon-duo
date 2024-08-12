@@ -1,0 +1,31 @@
+#!/bin/bash
+function join_by { local d=${1-} f=${2-}; if shift 2; then printf %s "$f" "${@/#/$d}"; fi; }
+
+name=$1
+if [[ -z "$1" ]] || [[ "$1" == "--help" ]]; then
+echo -e "Usage: svelte-icon-duo [name] [?path]\nParses an streamline icon core duo for svelte with tailwind. Uses given Path or stdin.\nCopy a streamline icon, run this command and paste the content. Stop with Ctrl+D.\nSee Icons: https://www.streamlinehq.com/icons/core-duo"
+exit -1
+fi
+
+file=${2:-/dev/stdin}
+
+if [[ "$file" == "/dev/stdin" ]]; then
+echo "Paste icon content here and stop with Ctrl+D."
+fi
+
+content=$(<$file)
+
+prefix="<script>
+    export let mono = false;
+    $: stroke = mono ? 'text-gray-500' : 'text-primary';
+    $: fill = mono ? 'text-gray-200' : 'text-primary-200';
+    let clazz = 'w-4 h-4 inline';
+    export {clazz as class};
+</script>"
+
+echo -e "${prefix}\n${content}" | sed \
+-e 's/stroke="[^"]*"/stroke="currentColor" class="{stroke}"/g' \
+-e 's/fill="#d7e0ff"/fill="currentColor" class="{fill}"/g' \
+-e 's/<svg/<svg class="{clazz}" {...$$restProps}/g' \
+> "$name.svelte"
+
