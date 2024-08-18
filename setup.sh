@@ -1,5 +1,20 @@
 #/bin/bash
 
+
+#function definitions
+append_alias() {
+    local shell_file="$1"
+    local alias_command="$2"
+
+    # Check if the alias already exists in the file
+    if grep -qF "$alias_command" "$shell_file"; then
+        echo "Alias already exists in $shell_file."
+    else
+        echo "$alias_command" >> "$shell_file"
+        echo "Alias added to $shell_file."
+    fi
+}
+
 ### Install basics
 echo "Install basic Packages"
 
@@ -175,18 +190,6 @@ sudo apt-get install -y insomnia
 
 ### set devhome
 echo "now you have to tell me where your dev-home is located at, so I can set a short for you...\n"
-append_alias() {
-    local shell_file="$1"
-    local alias_command="$2"
-
-    # Check if the alias already exists in the file
-    if grep -qF "$alias_command" "$shell_file"; then
-        echo "Alias already exists in $shell_file."
-    else
-        echo "$alias_command" >> "$shell_file"
-        echo "Alias added to $shell_file."
-    fi
-}
 
 # Prompt user for devhome directory
 read -p "Enter the devhome directory: " devhome

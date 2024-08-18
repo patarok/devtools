@@ -1,0 +1,16 @@
+#!/bin/bash
+
+# Check if an argument is provided
+if [ -z "$1" ]; then
+  echo "Usage: $0 <pattern>"
+  exit 1
+fi
+
+# Assign the first argument to a variable
+PATTERN=$1
+
+# Execute the git commands with the pattern
+git rm -r --cached "*.$PATTERN*" && git rm -r --cached "**/.$PATTERN*"
+
+# Print a message to confirm the action
+echo "Removed all files and directories matching pattern '$PATTERN' from the Git index."
