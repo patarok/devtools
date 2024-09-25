@@ -1,5 +1,20 @@
 #/bin/bash
 
+
+#function definitions
+append_alias() {
+    local shell_file="$1"
+    local alias_command="$2"
+
+    # Check if the alias already exists in the file
+    if grep -qF "$alias_command" "$shell_file"; then
+        echo "Alias already exists in $shell_file."
+    else
+        echo "$alias_command" >> "$shell_file"
+        echo "Alias added to $shell_file."
+    fi
+}
+
 ### Install basics
 echo "Install basic Packages"
 
@@ -173,6 +188,43 @@ sudo apt-get update
 sudo apt-get install -y insomnia
 
 
-### Rest
+### set devhome
+echo "now you have to tell me where your dev-home is located at, so I can set a short for you...\n"
 
-echo "DONE, install the folloowing one by hand: \nJetbrains toolbox https://www.jetbrains.com/toolbox-app/ https://www.microsoft.com/de-at/microsoft-teams/download-app"
+# Prompt user for devhome directory
+read -p "Enter the devhome directory: " devhome
+
+# Validate the input
+if [[ ! -d "$devhome" ]]; then
+    echo "Invalid directory: $devhome"
+    exit 1
+fi
+
+# Construct the alias command
+alias_command="alias devhome='cd $devhome'"
+
+# Determine the shell and file to modify
+case "$SHELL" in
+    */bash)
+        shell_file="$HOME/.bashrc"
+        ;;
+    */zsh)
+        shell_file="$HOME/.zshrc"
+        ;;
+    *)
+        echo "Unsupported shell: $SHELL"
+        exit 1
+        ;;
+esac
+
+# Append the alias to the appropriate file
+append_alias "$shell_file" "$alias_command"
+
+
+
+### Goodbye
+# Notify user
+echo "Please restart your shell to apply changes.\n"
+
+
+echo "Then, install the following one by hand: \nJetbrains toolbox https://www.jetbrains.com/toolbox-app/ https://www.microsoft.com/de-at/microsoft-teams/download-app"

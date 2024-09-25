@@ -1,0 +1,10 @@
+#!/bin/bash
+
+for setup in `detect-dev-setup`; do
+    if [ "$setup" == "docker-compose" ]; then
+        echo "running command: docker-compose ps -a -q | xargs -I {} docker inspect --format '{{.Id}} {{.Name}} {{.State.Status}}' {}"
+
+        uid=$(id -u) gid=$(id -g) docker-compose ps -a -q | xargs -I {} docker inspect --format '{{.Id}} {{.Name}} {{.State.Status}}' {}
+    fi
+done
+
