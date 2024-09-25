@@ -1,0 +1,27 @@
+#!/bin/bash
+
+# Function to start the PlantUML server
+start_plantuml() {
+    # Check if container exists
+    if [ "$(docker ps -aq -f name=plant_server)" ]; then
+        echo "Container plant_server already exists. Starting the existing container..."
+        docker start plant_server > /dev/null 2>&1  # Suppress output, show errors only
+    else
+        docker run -d --name plant_server -p 8888:8080 plantuml/plantuml-server:jetty > /dev/null 2>&1
+    fi
+}
+
+# Function to stop the PlantUML server
+stop_plantuml() {
+    docker stop plant_server > /dev/null 2>&1
+    docker rm plant_server > /dev/null 2>&1
+}
+
+# Main script logic
+if [[ "$1" == "start" ]]; then
+    start_plantuml
+elif [[ "$1" == "stop" ]]; then
+    stop_plantuml
+else
+    echo "Usage: plant start|stop"
+fi
