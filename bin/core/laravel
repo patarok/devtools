@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 
 if [ "$1" == "new" ]; then
     docker inspect --type=image laravel > /dev/null 2>&1 || \

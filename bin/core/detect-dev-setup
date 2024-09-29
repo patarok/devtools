@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 
 detected=""
 if [ -e "docker-compose.yml" ]; then	

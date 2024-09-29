@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 
 echo "running command: ssh-keygen -o -a 100 -t ed25519"
 

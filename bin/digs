@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 # Example: digs pc-web.at
 # Example Nameserver: digs pc-web.at ns
 

@@ -1,7 +1,7 @@
-#!/bin/bash
+#!/bin/sh
 
 # Determine the directory of the script
-DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
+DIR="$( cd "$( dirname "$0" )" >/dev/null 2>&1 && pwd )"
 
 # Define the source command
 source_cmd="source \"$DIR/loader.sh\""
@@ -30,7 +30,7 @@ else
 fi
 
 # Run the setup script if --setup argument is passed
-if [[ "$1" == "--setup" ]]; then
+if [ "$1" = "--setup" ]; then
   echo "Running setup script..."
-  bash "$DIR/setup.sh"  # Always use bash to run the setup script
+  sh "$DIR/setup.sh"  # Use sh to run the setup script for compatibility
 fi

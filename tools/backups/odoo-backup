@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 # Taken from: https://janikvonrotz.ch/2020/04/02/automate-odoo-backups-with-this-script/
 # Exit script if command fails
 # -u stops the script on unset variables

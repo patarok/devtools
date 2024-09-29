@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 
 for setup in `detect-dev-setup`; do
     if [ "$setup" == "docker-compose" ]; then
