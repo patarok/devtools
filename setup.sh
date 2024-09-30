@@ -17,26 +17,36 @@ append_alias() {
 # Detect the operating system
 OS="$(uname -s)"
 
-### Install basics
-echo "Installing basic packages"
+# Update and install basic packages
+echo "Installing basic packages..."
 
 if [ "$OS" = "Linux" ]; then
-    sudo apt-get update 
-    sudo apt-get install -y \
-        apt-transport-https \
-        ca-certificates \
-        curl \
-        gnupg-agent \
-        software-properties-common \
-        wget \
-        git \
-        remmina remmina-plugin-rdp \
-        jq \
-        neovim \
-        libnss3-tools
+    # Check for apt
+    if command -v apt >/dev/null 2>&1; then
+        sudo apt-get update 
+        sudo apt-get install -y \
+            apt-transport-https \
+            ca-certificates \
+            curl \
+            gnupg-agent \
+            software-properties-common \
+            wget \
+            git \
+            remmina remmina-plugin-rdp \
+            jq \
+            neovim \
+            libnss3-tools
+    else
+        echo "apt package manager not found. Please install it or use a different Linux distribution."
+        exit 1
+    fi
 
 elif [ "$OS" = "Darwin" ]; then
-    # Update brew and install packages
+    # Check for Homebrew
+    if ! command -v brew >/dev/null 2>&1; then
+        echo "Homebrew not found. Installing Homebrew..."
+        /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+    fi
     brew update
     brew install \
         ca-certificates \
@@ -47,55 +57,54 @@ elif [ "$OS" = "Darwin" ]; then
         jq \
         neovim \
         nss
+else
+    echo "Unsupported operating system: $OS"
+    exit 1
 fi
 
 ### Install Sublime
-echo "Installing Sublime Text"
+echo "Installing Sublime Text..."
 if [ "$OS" = "Linux" ]; then
     wget -qO - https://download.sublimetext.com/sublimehq-pub.gpg | sudo apt-key add -
     echo "deb https://download.sublimetext.com/ apt/stable/" | sudo tee /etc/apt/sources.list.d/sublime-text.list
     sudo apt-get update 
     sudo apt-get install -y sublime-text
-
 elif [ "$OS" = "Darwin" ]; then
     brew install --cask sublime-text
 fi
 
 ### Install VSCode
-echo "Installing VSCode"
+echo "Installing VSCode..."
 if [ "$OS" = "Linux" ]; then
     wget -O vscode.deb https://go.microsoft.com/fwlink/?LinkID=760868
     sudo dpkg -i vscode.deb
     sudo apt-get install -f -y
     rm vscode.deb
-
 elif [ "$OS" = "Darwin" ]; then
     brew install --cask visual-studio-code
 fi
 
 ### Install Typora
-echo "Installing Typora"
+echo "Installing Typora..."
 if [ "$OS" = "Linux" ]; then
     wget -qO - https://typora.io/linux/public-key.asc | sudo apt-key add -
     sudo add-apt-repository 'deb https://typora.io/linux ./'  
     sudo apt-get update 
     sudo apt-get install -y typora
-
 elif [ "$OS" = "Darwin" ]; then
     brew install --cask typora
 fi
 
 ### Docker Installation
-echo "Installing Docker"
+echo "Installing Docker..."
 if [ "$OS" = "Linux" ]; then
     sudo apt-get update 
     sudo apt-get install -y docker.io
-
 elif [ "$OS" = "Darwin" ]; then
     brew install --cask docker
 fi
 
-# Docker usermod setup
+# Docker usermod setup for Linux
 if [ "$OS" = "Linux" ]; then
     if ! getent group docker >/dev/null; then
         sudo groupadd docker
@@ -110,14 +119,14 @@ if [ "$OS" = "Linux" ]; then
 EOT
 fi
 
-### Docker Compose
-echo "Installing Docker Compose"
+### Docker Compose Installation
+echo "Installing Docker Compose..."
 dcRelease="1.29.2"
 sudo curl -L "https://github.com/docker/compose/releases/download/$dcRelease/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
 sudo chmod +x /usr/local/bin/docker-compose
 
 ### PHP Installation
-echo "Installing PHP"
+echo "Installing PHP..."
 if [ "$OS" = "Linux" ]; then
     sudo add-apt-repository -y ppa:ondrej/php 
     versions="8.1"
@@ -130,14 +139,13 @@ if [ "$OS" = "Linux" ]; then
         done
     done
     sudo apt-get install -y $phpPackages
-
 elif [ "$OS" = "Darwin" ]; then
     brew install php
 fi
 
 ### Install Composer
-echo "Installing Composer"
-EXPECTED_CHECKSUM=$(wget -q -O - https://composer.github.io/installer.sig)
+echo "Installing Composer..."
+EXPECTED_CHECKSUM=$(curl -s https://composer.github.io/installer.sig)
 php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');"
 ACTUAL_CHECKSUM=$(php -r "echo hash_file('sha384', 'composer-setup.php');")
 if [ "$EXPECTED_CHECKSUM" != "$ACTUAL_CHECKSUM" ]; then
@@ -149,11 +157,10 @@ sudo php composer-setup.php --quiet --install-dir=/usr/local/bin --filename=comp
 rm composer-setup.php
 
 ### Node Installation
-echo "Installing Node.js"
+echo "Installing Node.js..."
 if [ "$OS" = "Linux" ]; then
     curl -fsSL https://deb.nodesource.com/setup_16.x | sudo -E bash -
     sudo apt-get install -y nodejs
-
 elif [ "$OS" = "Darwin" ]; then
     brew install node
 fi
@@ -162,18 +169,17 @@ fi
 sudo npm install -g n
 
 ### Install Insomnia
-echo "Installing Insomnia"
+echo "Installing Insomnia..."
 if [ "$OS" = "Linux" ]; then
     curl -1sLf 'https://packages.konghq.com/public/insomnia/setup.deb.sh' | sudo -E distro=ubuntu codename=focal bash
     sudo apt-get update 
     sudo apt-get install -y insomnia
-
 elif [ "$OS" = "Darwin" ]; then
     brew install --cask insomnia
 fi
 
 ### Set devhome alias
-echo "Setting up devhome alias"
+echo "Setting up devhome alias..."
 
 # Prompt user for devhome directory
 read -p "Enter the devhome directory: " devhome
@@ -206,7 +212,6 @@ append_alias "$shell_file" "$alias_command"
 
 ### Goodbye
 echo "Please restart your shell to apply changes."
-
 echo "Then, install the following manually:"
 echo "Jetbrains Toolbox: https://www.jetbrains.com/toolbox-app/"
 echo "Microsoft Teams: https://www.microsoft.com/de-at/microsoft-teams/download-app"

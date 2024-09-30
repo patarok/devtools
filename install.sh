@@ -9,10 +9,10 @@ source_cmd="source \"$DIR/loader.sh\""
 # Initialize the file variable based on the current shell
 file=""
 case "$SHELL" in
-  /bin/bash)
+  *bash)
     file="$HOME/.bashrc"
     ;;
-  /bin/zsh | /usr/bin/zsh)
+  *zsh)
     file="$HOME/.zshrc"
     ;;
   *)
@@ -20,6 +20,12 @@ case "$SHELL" in
     exit 1
     ;;
 esac
+
+# Check if the shell configuration file exists
+if [ ! -f "$file" ]; then
+  echo "Shell configuration file $file does not exist. Creating it."
+  touch "$file"
+fi
 
 # Check if the source command is already in the file
 if grep -qF "$source_cmd" "$file"; then
@@ -32,5 +38,11 @@ fi
 # Run the setup script if --setup argument is passed
 if [ "$1" = "--setup" ]; then
   echo "Running setup script..."
-  sh "$DIR/setup.sh"  # Use sh to run the setup script for compatibility
+  # Use the appropriate shell to run the setup script
+  if [ -f "$DIR/setup.sh" ]; then
+    . "$DIR/setup.sh"  # Use dot (.) to source the script
+  else
+    echo "Setup script not found."
+    exit 1
+  fi
 fi
