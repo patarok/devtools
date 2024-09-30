@@ -1,4 +1,4 @@
-FROM php:8.1.5-cli-alpine
+FROM php:8.3.12-cli-alpine
 
 LABEL maintainer="Peter Patoschka <patoschkapeter@gmail.com>"
 
